@@ -47,20 +47,18 @@ class ticker:
     
     def __init__(self, ticker):
         
-        from yahoo_fin.stock_info import get_data
         import time    
         from datetime import timedelta
         import datetime as dt
-        import yahoo_fin.stock_info as si
-        import pandas as pd
-        import numpy as np
-        
+
         # Validamos que el dia de ejecucion sea valido
         self.todaysDate=check_week()["today"]
         self.yesterday=check_week()["yesterday"]
         self.today=self.todaysDate.strftime('%m/%d/%Y')
         
         self.name=ticker
+
+        print(self.today)
         print("Creating ticker ...")
     
     def getLatest(self):
@@ -70,23 +68,47 @@ class ticker:
         from datetime import timedelta
         import datetime as dt
         import yahoo_fin.stock_info as si
+        import requests
         import pandas as pd
-        import numpy as np
         
         # Obtenemos los ultimos registros para el dia actual
-        data=get_data(self.name , start_date = self.today)
-        print(str(self.name) + str(" was created, date:") + str(self.today) )
-        
-        # Obtenemos ultimo precio dsiponible para el instrumento
-        data["last_price"]=si.get_live_price(self.name)
-        
-        # Seleccionamos los campos y reiniciamos el indice
-        data=data[["open","high","low","last_price"]].reset_index()        
-        data = data.rename(columns={'index':'date'})
-        
-        # Hacemos calculo de variacion respecto a la apertura
-        data["change"]=((data["last_price"]/data["open"])-1)*100
-        data["price_change"]=data["last_price"]-data["open"]
+        try:
+
+            data=get_data(self.name , start_date = self.today)
+            print(str(self.name) + str(" was created, date:") + str(self.today) )
+            
+            # Obtenemos ultimo precio dsiponible para el instrumento
+            data["last_price"]=si.get_live_price(self.name)
+            
+            # Seleccionamos los campos y reiniciamos el indice
+            data=data[["open","high","low","last_price"]].reset_index()        
+            data = data.rename(columns={'index':'date'})
+            
+            # Hacemos calculo de variacion respecto a la apertura
+            data["change"]=((data["last_price"]/data["open"])-1)*100
+            data["price_change"]=data["last_price"]-data["open"]
+
+
+        except:
+
+            site=build_url(self.name)
+            resp = requests.get(site)
+            data = resp.json()
+
+            temp_time=data['chart']['result'][0]['timestamp']
+            date=pd.to_datetime(temp_time, unit = "s")[0]
+            latest_price=data['chart']['result'][0]['meta']['regularMarketPrice']
+            open_price=data['chart']['result'][0]['indicators']['quote'][0]['open'][0]
+            high=data['chart']['result'][0]['indicators']['quote'][0]['high']
+            high=getLatestHigh(high)
+            low=data['chart']['result'][0]['indicators']['quote'][0]['low']
+            low=getLatestLow(low)
+            actual={'date':date,'open':open_price,'high':high,'low':low,'last_price':latest_price}
+            data=pd.DataFrame(data=actual,index=[0])
+
+            # Hacemos calculo de variacion respecto a la apertura
+            data["change"]=((data["last_price"]/data["open"])-1)*100
+            data["price_change"]=data["last_price"]-data["open"]
         
         return(data)
     
@@ -140,6 +162,32 @@ class ticker:
         
         return(data)
 
+
+def build_url(ticker):
+    
+    base_url = "https://query1.finance.yahoo.com/v8/finance/chart/"
+    
+    site = base_url + ticker
+
+    return site
+
+def getLatestHigh(prices):
+    a=[]
+    for i in prices:
+        try:
+            a.append(float(i))
+        except:
+            continue
+    return(max(a))
+
+def getLatestLow(prices):
+    a=[]
+    for i in prices:
+        try:
+            a.append(float(i))
+        except:
+            continue
+    return(min(a))
 
 def save_gsheets(page,dataframe):
 

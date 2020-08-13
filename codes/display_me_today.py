@@ -16,7 +16,7 @@ import pygsheets
 initial_amount=5000000/777.18
 
 # ponderacion del portafolio
-ponderacion={'ETHO':4.6/100,
+ponderacion={'ETHO':4.06/100,
 'ESGV':4.12/100,
 'VT':12.16/100,
 'XLK':15.16/100,
@@ -27,7 +27,6 @@ ponderacion={'ETHO':4.6/100,
 'SMH':6.72/100,
 'ARKW':2.30/100,
 'ARKK':2.13/100,
-'ESGU':4.79/100,
 'OTROS':2.23/100}
 
 # portafolio en el que se invierte
@@ -35,19 +34,21 @@ tickers=["ESGV","ETHO","VT","XLK","VTI","IVV","QQQ","SMH","ARKW","ARKK","ESGU"]
 
 dataframes=[]
 for i in tickers:
-       
-    # Generamos el diccionario pada cada ticker
-    string="{i}=ticker('{i}')".format(i=i)
-    exec(string)
-    
-    string2="df_{i}={i}.getLatest()".format(i=i)
-    exec(string2)
-    
-    string3="df_{i}['ticker']='{i}'".format(i=i)
-    exec(string3)
-    
-    string4="dataframes.append(df_{i})".format(i=i)
-    exec(string4)
+    try:
+        # Generamos el diccionario pada cada ticker
+        string="{i}=ticker('{i}')".format(i=i)
+        exec(string)
+        
+        string2="df_{i}={i}.getLatest()".format(i=i)
+        exec(string2)
+        
+        string3="df_{i}['ticker']='{i}'".format(i=i)
+        exec(string3)
+        
+        string4="dataframes.append(df_{i})".format(i=i)
+        exec(string4)
+    except:
+        pass
 
 # Concatenamos todos los dataframes en solo uno
 day_display=reduce(lambda x, y: pd.concat([x, y]), dataframes)
