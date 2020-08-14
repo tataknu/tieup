@@ -123,7 +123,7 @@ class ticker:
         import numpy as np
         
         self.daysAgo = self.todaysDate - timedelta(days = i)
-        data = get_data(self.name , start_date = self.daysAgo, end_date= self.today)
+        data = get_data(self.name , start_date = self.daysAgo, end_date= self.yesterday)
         data = data.reset_index()
         data = data.rename(columns={'index':'date'})
 
@@ -148,11 +148,13 @@ class ticker:
         import numpy as np
         
         self.daysAgo = self.todaysDate - timedelta(weeks = i)
-        data = get_data(self.name , start_date = self.daysAgo, end_date= self.today)
+        data = get_data(self.name , start_date = self.daysAgo, end_date= self.yesterday)
         data = data.reset_index()
         data = data.rename(columns={'index':'date'}) 
 
-        data_day = get_data(self.name , start_date = self.today)
+        data_day = self.getLatest()
+        data_day = data_day.rename(columns={'last_price':'close'}) 
+        data_day=data_day[['date','open','high','low','close']]
         
         date = dt.datetime.strptime(self.today, "%m/%d/%Y")
         
