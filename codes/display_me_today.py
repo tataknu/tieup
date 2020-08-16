@@ -150,16 +150,16 @@ if close_time<now_est:
 
     try:
         print("Checking folders...")
-        os.mkdir("../Data/history/"+str(year))
+        os.mkdir("../data/history/"+str(year))
     except:
         pass
 
     try:
-        os.mkdir("../Data/history/"+str(year)+"/"+str(month))
+        os.mkdir("../data/history/"+str(year)+"/"+str(month))
     except:
         pass
     print("Saving the results of the day")
-    day_display.to_csv("../Data/history/"+str(year)+"/"+str(month)+"/"+str(today)+".csv",index=False)
+    day_display.to_csv("../data/history/"+str(year)+"/"+str(month)+"/"+str(today)+".csv",index=False)
 
 else:
     pass

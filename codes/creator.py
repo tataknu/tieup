@@ -25,10 +25,10 @@ data=wks.get_as_df(has_header=True, index_column=None, start=0, end=None,)
 data["perc"]=data["usd"].apply(lambda x: x/sum(data["usd"]))
 data["date"]=dt.date.today()
 
-data.to_json("../Data/purchase.json")
+data.to_json("../data/purchase.json")
 
 wks=sh[1]
 
 data=wks.get_as_df(has_header=True, index_column=None, start=0, end=None,)
 data["date"]=dt.date.today()
-data.to_json("../Data/purchase_etf.json")
+data.to_json("../data/purchase_etf.json")
