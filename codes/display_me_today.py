@@ -17,7 +17,7 @@ import subprocess
 
 try:
     print("Creating portafolio from google drive...")
-    os.system("python creator.py")
+    os.system("python3 creator.py")
 except:
     print("Unable to create the portafolio")
     print("Please check drive connections")
