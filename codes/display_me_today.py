@@ -23,7 +23,7 @@ except:
     print("Please check drive connections")
 
 
-json=pd.read_json("../Data/purchase_etf.json")
+json=pd.read_json("../data/purchase_etf.json")
 
 json=json.to_dict('series')
 tickers=list(json['tickers'])
