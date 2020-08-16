@@ -73,7 +73,7 @@ class ticker:
         
         # Obtenemos los ultimos registros para el dia actual
         try:
-
+            print("Method 1 ...")
             data=get_data(self.name , start_date = self.today)
             print(str(self.name) + str(" was created, date:") + str(self.today) )
             
@@ -90,7 +90,7 @@ class ticker:
 
 
         except:
-
+            print("Method 2 ...")
             site=build_url(self.name)
             resp = requests.get(site)
             data = resp.json()
